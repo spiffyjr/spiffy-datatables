@@ -19,6 +19,21 @@ class Collection implements \Iterator
     protected $columns = array();
 
     /**
+     * Factory to create a column collection.
+     *
+     * @param array $spec
+     * @return Collection
+     */
+    public static function factory(array $spec)
+    {
+        $collection = new Collection();
+        foreach($spec as $columnDef) {
+            $collection->add($columnDef);
+        }
+        return $collection;
+    }
+
+    /**
      * @return array
      */
     public function getColumns()

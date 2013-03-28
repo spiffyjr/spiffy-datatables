@@ -7,6 +7,24 @@ use SpiffyDatatables\Column\Column;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
 {
+    public function testFactory()
+    {
+        $input = array(
+            array(
+                'sName' => 'foo',
+            ),
+            array(
+                'sName' => 'bar'
+            )
+        );
+
+        $expected = new Collection();
+        $expected->add(array('sName' => 'foo'))
+                 ->add(array('sName' => 'bar'));
+
+        $this->assertEquals($expected, Collection::factory($input));
+    }
+
     public function testExceptionThrownOnInvalidSpec()
     {
         $columns = new Collection();
