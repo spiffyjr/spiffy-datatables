@@ -3,16 +3,15 @@ $("#foo").dataTable({
     "bJQueryUI":true,
     "aoColumns":[
         {
+            "mData":"id",
             "sTitle":"One"
         },
         {
+            "mData":"name",
             "sTitle":"Two"
         },
         {
-            "sTitle":"Three"
-        },
-        {
-
+            "bVisible":false
         }
     ]
 });

@@ -10,6 +10,13 @@ use Zend\Json\Json;
 class Datatable
 {
     /**
+     * An array of entities for static data output.
+     *
+     * @var array
+     */
+    protected $staticData = array();
+
+    /**
      * @var Collection
      */
     protected $columns;
@@ -23,6 +30,24 @@ class Datatable
      * @var RendererInterface
      */
     protected $renderer;
+
+    /**
+     * @param array $staticData
+     * @return Datatable
+     */
+    public function setStaticData($staticData)
+    {
+        $this->staticData = $staticData;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStaticData()
+    {
+        return $this->staticData;
+    }
 
     /**
      * @param Collection $columns
