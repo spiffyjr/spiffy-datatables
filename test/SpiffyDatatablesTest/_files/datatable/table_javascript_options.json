@@ -1,0 +1,17 @@
+{
+    "bAutoWidth":true,
+    "bJQueryUI":true,
+    "aoColumns":[
+        {
+            "mData":"id",
+            "sTitle":"One"
+        },
+        {
+            "mData":"name",
+            "sTitle":"Two"
+        },
+        {
+            "bVisible":false
+        }
+    ]
+}

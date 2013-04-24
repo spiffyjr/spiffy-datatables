@@ -22,8 +22,8 @@ class Table extends AbstractRenderer
         $attributes['id'] = $id;
 
         $tableStart = sprintf('<table%s>%s', $this->htmlAttribs($attributes), PHP_EOL);
-        $header     = str_repeat(' ', 4) . '<thead>' . PHP_EOL;
-        $header    .= str_repeat(' ', 8) . '<tr>' . PHP_EOL;
+        $header = str_repeat(' ', 4) . '<thead>' . PHP_EOL;
+        $header.= str_repeat(' ', 8) . '<tr>' . PHP_EOL;
 
         /** @var $column \SpiffyDatatables\Column\AbstractColumn */
         foreach($datatable->getColumns() as $column) {
@@ -33,11 +33,18 @@ class Table extends AbstractRenderer
         }
 
         $body = str_repeat(' ', 4) . '<tbody>' . PHP_EOL;
-        $body.= $this->getStaticBody($datatable);
+
+        if ($datatable->isServerSide()) {
+            $body.= $this->getServerSideBody($datatable);
+        } else {
+            $body.= $this->getStaticBody($datatable);
+        }
+
         $body.= str_repeat(' ', 4) . '</tbody>' . PHP_EOL;
 
         $header  .= str_repeat(' ', 8) . '</tr>' . PHP_EOL;
         $header  .= str_repeat(' ', 4) . '</thead>' . PHP_EOL;
+
         $tableEnd = '</table>';
 
         return $tableStart . $header . $body . $tableEnd;
@@ -52,14 +59,45 @@ class Table extends AbstractRenderer
      */
     public function renderJavascript($id, Datatable $datatable)
     {
-        $options              = $datatable->getOptions()->getOptions();
+        return sprintf('$("#%s").dataTable(%s);', $id, $this->renderOptionsJavascript($datatable));
+    }
+
+    /**
+     * Renders only the options portion of the Javascript for Datatables. Useful for custom setting up
+     * javascript instead of using the built in methods. If no custom options are passed in then the
+     * options for the datatable are used.
+     *
+     * @param Datatable $datatable
+     * @param array|null $options
+     * @return string
+     */
+    public function renderOptionsJavascript(Datatable $datatable, array $options = null)
+    {
+        $options              = $options ? $options : $datatable->getOptions()->getData();
         $options['aoColumns'] = new Expr($this->columnsToJson($datatable->getColumns()));
 
-        $start   = sprintf('$("#%s").dataTable(', $id);
-        $options = $this->toJson($options, $datatable->getOptions()->getJsonExpressions());
-        $end     = ');';
+        $json = $this->toJson(
+            $options,
+            $datatable->getOptions()->getJsonExpressions()
+        );
 
-        return $start . Json::prettyPrint($options, array('indent' => "    ")) . $end;
+        return Json::prettyPrint($json, array('indent' => "    "));
+    }
+
+    /**
+     * @param Datatable $datatable
+     * @return string
+     */
+    protected function getServerSideBody(Datatable $datatable)
+    {
+        $output = str_repeat(' ', 8) . '<tr>';
+        $output.= sprintf(
+            '<td colspan="%d">Loading data ...</td>',
+            count($datatable->getColumns()->getColumns())
+        );
+        $output.= '</tr>' . PHP_EOL;
+
+        return $output;
     }
 
     /**
@@ -70,7 +108,7 @@ class Table extends AbstractRenderer
     {
         $output = '';
 
-        foreach($datatable->getStaticData() as $row) {
+        foreach($datatable->getDataResult()->getData() as $row) {
             $output.= str_repeat(' ', 8) . '<tr>' . PHP_EOL;
 
             /** @var $column \SpiffyDatatables\Column\AbstractColumn */

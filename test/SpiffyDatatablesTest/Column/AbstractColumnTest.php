@@ -7,6 +7,13 @@ use SpiffyDatatablesTest\Assets\SimpleEntity;
 
 class AbstractColumnTest extends \PHPUnit_Framework_TestCase
 {
+    public function testExceptionIsThrownWhenNoMethodGiven()
+    {
+        $column = new Column();
+        $this->setExpectedException('RuntimeException', 'invalid or missing method for data retrieval');
+        $column->getValueFromData(array());
+    }
+
     public function testGetValueFallsBackTomDataIfPresent()
     {
         $data   = array('name' => 'foo');
@@ -27,13 +34,6 @@ class AbstractColumnTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException('InvalidArgumentException', 'array or object expected');
         $column->getValueFromData(false);
-    }
-
-    public function testExceptionIsThrownWhenNoMethodGiven()
-    {
-        $column = new Column();
-        $this->setExpectedException('RuntimeException', 'invalid or missing method for data retrieval');
-        $column->getValueFromData(array());
     }
 
     public function testGetValueFromAnObject()

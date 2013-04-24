@@ -7,14 +7,14 @@ abstract class AbstractOptions
     /**
      * @var array
      */
-    protected $options = array();
+    protected $data = array();
 
     /**
-     * Options that are not verified.
+     * Data that is not verified.
      *
      * @var array
      */
-    protected $extraOptions = array();
+    protected $extraData = array();
 
     /**
      * An array of keys that are JSON expressions and should be taken literally (closures, for example).
@@ -24,40 +24,38 @@ abstract class AbstractOptions
     protected $jsonExpressions = array();
 
     /**
-     * @param array $options
+     * @param array $data
      */
-    public function __construct(array $options = array())
+    public function __construct(array $data = array())
     {
-        $this->setOptions($options);
+        $this->setData($data);
     }
 
     /**
-     * @param array $extraOptions
+     * @param array $extraData
      * @return AbstractOptions
      */
-    public function setExtraOptions($extraOptions)
+    public function setExtraData($extraData)
     {
-        $this->extraOptions = $extraOptions;
+        $this->extraData = $extraData;
         return $this;
     }
 
     /**
      * @return array
      */
-    public function getExtraOptions()
+    public function getExtraData()
     {
-        return $this->extraOptions;
+        return $this->extraData;
     }
 
     /**
-     * Set the options.
-     *
-     * @param array $options
+     * @param array $data
      * @return AbstractOptions
      */
-    public function setOptions(array $options)
+    public function setData(array $data)
     {
-        foreach($options as $key => $value) {
+        foreach($data as $key => $value) {
             $this->set($key, $value);
         }
         return $this;
@@ -66,9 +64,16 @@ abstract class AbstractOptions
     /**
      * @return array
      */
-    public function getOptions()
+    public function getData()
     {
-        return array_merge($this->options, $this->extraOptions);
+        $merged = array_merge($this->data, $this->extraData);
+
+        foreach($merged as $key => $value) {
+            if (null === $value) {
+                unset($merged[$key]);
+            }
+        }
+        return $merged;
     }
 
     /**
@@ -79,7 +84,7 @@ abstract class AbstractOptions
     public function set($key, $value)
     {
         $this->validateKey($key);
-        $this->options[$key] = $value;
+        $this->data[$key] = $value;
         return $this;
     }
 
@@ -90,7 +95,7 @@ abstract class AbstractOptions
     public function get($key)
     {
         $this->validateKey($key);
-        return $this->options[$key];
+        return $this->data[$key];
     }
 
     /**
@@ -108,7 +113,7 @@ abstract class AbstractOptions
      */
     protected function validateKey($key)
     {
-        if (!array_key_exists($key, $this->options)) {
+        if (!array_key_exists($key, $this->data)) {
             throw new \InvalidArgumentException(sprintf(
                 'Unknown option "%s"',
                 $key

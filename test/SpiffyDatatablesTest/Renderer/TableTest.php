@@ -2,6 +2,7 @@
 
 namespace SpiffyDatatablesTest\Renderer;
 
+use SpiffyDatatables\DataResult;
 use SpiffyDatatables\Datatable;
 use SpiffyDatatables\Renderer\Table;
 use SpiffyDatatablesTest\Assets\SimpleEntity;
@@ -17,6 +18,16 @@ class TableTest extends \PHPUnit_Framework_TestCase
      * @var Table
      */
     protected $renderer;
+
+    /**
+     * @var SimpleEntity
+     */
+    protected $row1;
+
+    /**
+     * @var SimpleEntity
+     */
+    protected $row2;
 
     public function setUp()
     {
@@ -43,19 +54,47 @@ class TableTest extends \PHPUnit_Framework_TestCase
              ->setName('bar')
              ->setPublic('nope');
 
-        $data = array($row1, $row2);
-
-        $this->datatable->setStaticData($data);
+        $this->row1 = $row1;
+        $this->row2 = $row2;
     }
 
-    public function testFullMarkupIsRendered()
+    public function testServerSideMarkupIsRenderedUsingOptions()
     {
-        $expected = file_get_contents(__DIR__ . '/../_files/datatable/table_markup.html');
+        $this->datatable->getOptions()->set('bServerSide', true);
+
+        $expected = file_get_contents(__DIR__ . '/../_files/datatable/table_serverside_markup.html');
         $result   = $this->renderer->renderHtml('foo', $this->datatable, array('class' => 'bar'));
         $this->assertEquals($expected, $result);
     }
 
-    public function testJavascriptRenderedWithOptions()
+    public function testServerSideMarkupIsRendererdFromDataResult()
+    {
+        $data = array($this->row1, $this->row2);
+        $this->datatable->setDataResult(new DataResult($data, 10, count($data)));
+
+        $expected = file_get_contents(__DIR__ . '/../_files/datatable/table_serverside_markup.html');
+        $result   = $this->renderer->renderHtml('foo', $this->datatable, array('class' => 'bar'));
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testStaticMarkupIsRendered()
+    {
+        $data = array($this->row1, $this->row2);
+        $this->datatable->setDataResult(new DataResult($data, count($data)));
+
+        $expected = file_get_contents(__DIR__ . '/../_files/datatable/table_static_markup.html');
+        $result   = $this->renderer->renderHtml('foo', $this->datatable, array('class' => 'bar'));
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testJavascriptOptionsRendered()
+    {
+        $expected = file_get_contents(__DIR__ . '/../_files/datatable/table_javascript_options.json');
+        $result   = $this->renderer->renderOptionsJavascript($this->datatable);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testJavascriptRendered()
     {
         $expected = file_get_contents(__DIR__ . '/../_files/datatable/table_javascript.js');
         $result   = $this->renderer->renderJavascript('foo', $this->datatable);

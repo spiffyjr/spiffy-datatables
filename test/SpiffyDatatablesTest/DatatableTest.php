@@ -2,6 +2,7 @@
 
 namespace SpiffyDatatablesTest;
 
+use SpiffyDatatables\DataResult;
 use SpiffyDatatables\Datatable;
 use SpiffyDatatables\Renderer\Table;
 
@@ -22,7 +23,28 @@ class DatatableTest extends \PHPUnit_Framework_TestCase
     public function testConfigIsLazyLoaded()
     {
         $datatable = new Datatable();
-        $this->assertInstanceOf('SpiffyDatatables\DatatableOptions', $datatable->getOptions());
+        $this->assertInstanceOf('SpiffyDatatables\Options', $datatable->getOptions());
+    }
+
+    public function testDataResultIsLazyLoaded()
+    {
+        $datatable = new Datatable();
+        $this->assertInstanceOf('SpiffyDatatables\DataResult', $datatable->getDataResult());
+    }
+
+    public function testRenderOptionsJavascriptProxiesToRenderer()
+    {
+        $datatable = new Datatable();
+        $renderer  = new Table();
+
+        $datatable->setRenderer($renderer);
+        $datatable->getOptions()->setData(array('bAutoWidth' => true));
+        $datatable->getColumns()->add(array('sName' => 'one', 'sTitle' => 'Column One'));
+
+        $this->assertEquals(
+            $renderer->renderOptionsJavascript($datatable),
+            $datatable->renderOptionsJavascript()
+        );
     }
 
     public function testRenderHtmlProxiesToRenderer()
@@ -31,7 +53,7 @@ class DatatableTest extends \PHPUnit_Framework_TestCase
         $renderer  = new Table();
 
         $datatable->setRenderer($renderer);
-        $datatable->getOptions()->setOptions(array('bAutoWidth' => true));
+        $datatable->getOptions()->setData(array('bAutoWidth' => true));
         $datatable->getColumns()->add(array('sName' => 'one', 'sTitle' => 'Column One'));
 
         $this->assertEquals(
@@ -46,12 +68,26 @@ class DatatableTest extends \PHPUnit_Framework_TestCase
         $renderer  = new Table();
 
         $datatable->setRenderer($renderer);
-        $datatable->getOptions()->setOptions(array('bAutoWidth' => true));
+        $datatable->getOptions()->setData(array('bAutoWidth' => true));
         $datatable->getColumns()->add(array('sName' => 'one', 'sTitle' => 'Column One'));
 
         $this->assertEquals(
             $renderer->renderJavascript('foo', $datatable),
             $datatable->renderJavascript('foo')
         );
+    }
+
+    public function testIsServerSide()
+    {
+        $datatable = new Datatable();
+
+        $this->assertEquals(false, $datatable->isServerSide());
+
+        $datatable->getOptions()->set('bServerSide', true);
+        $this->assertEquals(true, $datatable->isServerSide());
+
+        $datatable->getOptions()->set('bServerSide', null);
+        $datatable->setDataResult(new DataResult(array(), 10, 0));
+        $this->assertEquals(true, $datatable->isServerSide());
     }
 }

@@ -9,8 +9,8 @@ class SimpleOptions extends AbstractOptions
     /**
      * @var array
      */
-    protected $options = array(
+    protected $data = array(
         'foo' => null,
-        'bar' => null
+        'bar' => null,
     );
 }

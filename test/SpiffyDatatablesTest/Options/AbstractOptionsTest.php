@@ -12,7 +12,14 @@ class AbstractOptionsTest extends \PHPUnit_Framework_TestCase
         $expected = array('foo' => 'foo', 'bar' => 'bar');
         $options  = new SimpleOptions($expected);
 
-        $this->assertEquals($expected, $options->getOptions());
+        $this->assertEquals($expected, $options->getData());
+    }
+
+    public function testGetOptionsIgnoresDefaultValues()
+    {
+        $expected = array('foo' => 'bar');
+        $options  = new SimpleOptions(array('foo' => 'bar'));
+        $this->assertEquals($expected, $options->getData());
     }
 
     public function testExtraOptionsAreSetAndReturned()
@@ -23,9 +30,9 @@ class AbstractOptionsTest extends \PHPUnit_Framework_TestCase
             'baz' => 'baz',
         );
         $options = new SimpleOptions(array('foo' => 'foo', 'bar' => 'bar'));
-        $options->setExtraOptions(array('baz' => 'baz'));
+        $options->setExtraData(array('baz' => 'baz'));
 
-        $this->assertEquals($expected, $options->getOptions());
+        $this->assertEquals($expected, $options->getData());
     }
 
     public function testSetThrowsExceptionOnInvalidKey()

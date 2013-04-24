@@ -112,7 +112,7 @@ abstract class AbstractRenderer implements RendererInterface
         $result = array();
         /** @var $column \SpiffyDatatables\Column\AbstractColumn */
         foreach($columns as $column) {
-            $result[] = new Expr($this->toJson($column->getOptions(), $column->getJsonExpressions()));
+            $result[] = new Expr($this->toJson($column->getData(), $column->getJsonExpressions()));
         }
         return $this->toJson($result);
     }
@@ -120,19 +120,13 @@ abstract class AbstractRenderer implements RendererInterface
     /**
      * @param array $input
      * @param array $expressionKeys
-     * @return mixed
+     * @return string
      */
     protected function toJson(array $input, array $expressionKeys = array())
     {
         foreach($input as $key => $value) {
             if (in_array($key, $expressionKeys)) {
                 $options[$key] = new Expr($value);
-            }
-        }
-
-        foreach($input as $key => $value) {
-            if (is_null($value)) {
-                unset($input[$key]);
             }
         }
 

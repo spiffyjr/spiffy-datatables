@@ -10,11 +10,9 @@ use Zend\Json\Json;
 class Datatable
 {
     /**
-     * An array of entities for static data output.
-     *
-     * @var array
+     * @var DataResult
      */
-    protected $staticData = array();
+    protected $dataResult;
 
     /**
      * @var Collection
@@ -22,7 +20,7 @@ class Datatable
     protected $columns;
 
     /**
-     * @var DatatableOptions
+     * @var Options
      */
     protected $options;
 
@@ -32,21 +30,33 @@ class Datatable
     protected $renderer;
 
     /**
-     * @param array $staticData
+     * @return bool
+     */
+    public function isServerSide()
+    {
+        return $this->getOptions()->get('bServerSide') ||
+            $this->getDataResult()->getFilteredResultCount() !== null;
+    }
+
+    /**
+     * @param \SpiffyDatatables\DataResult $dataResult
      * @return Datatable
      */
-    public function setStaticData($staticData)
+    public function setDataResult($dataResult)
     {
-        $this->staticData = $staticData;
+        $this->dataResult = $dataResult;
         return $this;
     }
 
     /**
-     * @return array
+     * @return \SpiffyDatatables\DataResult
      */
-    public function getStaticData()
+    public function getDataResult()
     {
-        return $this->staticData;
+        if (!$this->dataResult instanceof DataResult) {
+            $this->dataResult = new DataResult(array(), 0);
+        }
+        return $this->dataResult;
     }
 
     /**
@@ -71,22 +81,22 @@ class Datatable
     }
 
     /**
-     * @param DatatableOptions $options
+     * @param Options $options
      * @return Datatable
      */
-    public function setOptions(DatatableOptions $options)
+    public function setOptions(Options $options)
     {
         $this->options = $options;
         return $this;
     }
 
     /**
-     * @return DatatableOptions
+     * @return Options
      */
     public function getOptions()
     {
-        if (!$this->options instanceof DatatableOptions) {
-            $this->options = new DatatableOptions();
+        if (!$this->options instanceof Options) {
+            $this->options = new Options();
         }
         return $this->options;
     }
@@ -121,6 +131,17 @@ class Datatable
     public function renderJavascript($id)
     {
         return $this->getRenderer()->renderJavascript($id, $this);
+    }
+
+    /**
+     * Proxies to getRenderer()->renderOptionsJavascript();
+     *
+     * @var array|null $options
+     * @return string
+     */
+    public function renderOptionsJavascript(array $options = array())
+    {
+        return $this->getRenderer()->renderOptionsJavascript($this, $options);
     }
 
     /**

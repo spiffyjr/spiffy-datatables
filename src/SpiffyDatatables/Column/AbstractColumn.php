@@ -28,7 +28,7 @@ abstract class AbstractColumn extends AbstractOptions
     /**
      * @var array
      */
-    protected $options = array(
+    protected $data = array(
         'aDataSort'       => null,
         'asSorting'       => null,
         'bSearchable'     => null,
@@ -37,6 +37,7 @@ abstract class AbstractColumn extends AbstractOptions
         'fnCreatedCell'   => null,
         'iDataSort'       => null,
         'mData'           => null,
+        'mDataProp'       => null,
         'mRender'         => null,
         'sCellType'       => null,
         'sClass'          => null,

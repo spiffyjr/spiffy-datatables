@@ -5,7 +5,7 @@ namespace SpiffyDatatables;
 use SpiffyDatatables\Options\AbstractOptions;
 
 /**
- * Class DatatableOptions
+ * Class Options
  *
  * All options in this class reference http://datatables.net/usage/features and http://datatables.net/usage/options.
  * For options that are new to datatables but not yet handled in this method you can use the setExtraOptions() method.
@@ -13,7 +13,7 @@ use SpiffyDatatables\Options\AbstractOptions;
  *
  * @package SpiffyDatatables
  */
-class DatatableOptions extends AbstractOptions
+class Options extends AbstractOptions
 {
     /**
      * An array of keys that are JSON expressions and should be taken literally (closures, for example).
@@ -25,7 +25,7 @@ class DatatableOptions extends AbstractOptions
     /**
      * @var array
      */
-    protected $options = array(
+    protected $data = array(
         // features
         'aaData'          => null,
         'bAutoWidth'      => null,
