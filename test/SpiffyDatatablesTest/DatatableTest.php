@@ -2,8 +2,10 @@
 
 namespace SpiffyDatatablesTest;
 
+use SpiffyDatatables\Column\Collection;
 use SpiffyDatatables\DataResult;
 use SpiffyDatatables\Datatable;
+use SpiffyDatatables\Options;
 use SpiffyDatatables\Renderer\Table;
 
 class DatatableTest extends \PHPUnit_Framework_TestCase
@@ -89,5 +91,46 @@ class DatatableTest extends \PHPUnit_Framework_TestCase
         $datatable->getOptions()->set('bServerSide', null);
         $datatable->setDataResult(new DataResult(array(), 10, 0));
         $this->assertEquals(true, $datatable->isServerSide());
+    }
+
+    public function testDatatableIsReturned()
+    {
+        $this->assertInstanceOf('SpiffyDatatables\Datatable', Datatable::create(array()));
+    }
+
+    public function testFactoryHandlesOptionsDefinition()
+    {
+        $spec = array(
+            'options' => array(
+                'bProcessing' => true,
+                'bServerSide' => true
+            )
+        );
+
+        $expected = new Options();
+        $expected->set('bProcessing', true)
+                 ->set('bServerSide', true);
+
+        $this->assertEquals($expected, Datatable::create($spec)->getOptions());
+    }
+
+    public function testFactoryHandlesColumnsDefinition()
+    {
+        $spec = array(
+            'columns' => array(
+                array(
+                    'sName' => 'foo',
+                ),
+                array(
+                    'sName' => 'bar'
+                )
+            )
+        );
+
+        $expected = new Collection();
+        $expected->add(array('sName' => 'foo'))
+                 ->add(array('sName' => 'bar'));
+
+        $this->assertEquals($expected, Datatable::create($spec)->getColumns());
     }
 }

@@ -30,6 +30,25 @@ class Datatable
     protected $renderer;
 
     /**
+     * @param array $spec
+     * @return Datatable
+     */
+    public static function create(array $spec)
+    {
+        $datatable = new Datatable();
+
+        if (isset($spec['columns'])) {
+            $datatable->setColumns(Collection::factory($spec['columns']));
+        }
+
+        if (isset($spec['options'])) {
+            $datatable->getOptions()->setData($spec['options']);
+        }
+
+        return $datatable;
+    }
+
+    /**
      * @return bool
      */
     public function isServerSide()
