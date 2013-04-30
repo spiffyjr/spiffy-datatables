@@ -122,11 +122,11 @@ abstract class AbstractRenderer implements RendererInterface
      * @param array $expressionKeys
      * @return string
      */
-    protected function toJson(array $input, array $expressionKeys = array())
+    public function toJson(array $input, array $expressionKeys = array())
     {
         foreach($input as $key => $value) {
             if (in_array($key, $expressionKeys)) {
-                $options[$key] = new Expr($value);
+                $input[$key] = new Expr($value);
             }
         }
 

@@ -100,4 +100,10 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $result   = $this->renderer->renderJavascript('foo', $this->datatable);
         $this->assertEquals($expected, $result);
     }
+
+    public function testToJsonHandlesExpressions()
+    {
+        $result = $this->renderer->toJson(array('foo' => 'function() { }'), array('foo'));
+        $this->assertEquals('{"foo":function() { }}', $result);
+    }
 }

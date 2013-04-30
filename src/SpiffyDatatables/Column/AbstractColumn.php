@@ -51,6 +51,15 @@ abstract class AbstractColumn extends AbstractOptions
     );
 
     /**
+     * An array of keys that are JSON expressions and should be taken literally (closures, for example).
+     *
+     * @var array
+     */
+    protected $jsonExpressions = array(
+        'mRender'
+    );
+
+    /**
      * @param array $options
      */
     public function __construct(array $options = array())
