@@ -4,8 +4,8 @@
     "homepage": "http://www.github.com/spiffyjr/spiffy-datatables.git",
     "require": {
         "php": ">=5.3.3",
-        "zendframework/zend-json": "2.1.*",
-        "zendframework/zend-view": "2.1.*"
+        "zendframework/zend-json": "2.*",
+        "zendframework/zend-view": "2.*"
     },
     "require-dev": {
         "mockery/mockery": "0.*",
