@@ -81,7 +81,10 @@ abstract class AbstractColumn extends AbstractOptions
      */
     public function getValueFromData($data)
     {
-        $method = $this->method ? $this->method : $this->get('mData');
+        $method = $this->method;
+        $method = $method ? $method : $this->get('mDataProp');
+        $method = $method ? $method : $this->get('mData');
+        $method = $method ? $method : $this->get('sTitle');
 
         if (is_array($data)) {
             if (is_string($method)) {
@@ -102,7 +105,7 @@ abstract class AbstractColumn extends AbstractOptions
 
                 if (array_key_exists($method, $vars)) {
                     return $vars[$method];
-                } else if (isset($data[$method])) {
+                } else if (is_array($data) && isset($data[$method])) {
                     return $data->$method;
                 } else if (method_exists($data, $method)) {
                     return $data->$method();
@@ -111,7 +114,7 @@ abstract class AbstractColumn extends AbstractOptions
                         return strtoupper(array_shift($letters));
                     };
                     $accessor = preg_replace_callback('/(_.)/', $transform, $method);
-                    $accessor = 'get' . ucfirst($method);
+                    $accessor = 'get' . ucfirst($accessor);
                     $methods  = get_class_methods($data);
                     if (in_array($accessor, $methods)) {
                         return $data->$accessor();
