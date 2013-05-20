@@ -102,6 +102,8 @@ abstract class AbstractColumn extends AbstractOptions
 
                 if (array_key_exists($method, $vars)) {
                     return $vars[$method];
+                } else if (isset($data[$method])) {
+                    return $data->$method;
                 } else if (method_exists($data, $method)) {
                     return $data->$method();
                 } else {

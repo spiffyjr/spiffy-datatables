@@ -60,6 +60,7 @@ class Options extends AbstractOptions
         'sAjaxDataProp'   => null,
         'sAjaxSource'     => null,
         'sCookiePrefix'   => null,
+        'sPaginationType' => null,
         'sDom'            => null
     );
 

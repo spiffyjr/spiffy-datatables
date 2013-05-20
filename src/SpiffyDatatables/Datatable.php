@@ -61,7 +61,7 @@ class Datatable
      * @param \SpiffyDatatables\DataResult $dataResult
      * @return Datatable
      */
-    public function setDataResult($dataResult)
+    public function setDataResult(DataResult $dataResult)
     {
         $this->dataResult = $dataResult;
         return $this;
