@@ -1,11 +1,7 @@
-<phpunit
-    bootstrap="./Bootstrap.php"
-    colors="true"
-    backupGlobals="false"
->
+<phpunit bootstrap="./Bootstrap.php" colors="true">
     <testsuites>
-        <testsuite name="SpiffyDatatables Test Suite">
-            <directory>./</directory>
+        <testsuite name="SpiffyDataTables Module Tests">
+            <directory>./SpiffyDatatablesTest</directory>
         </testsuite>
     </testsuites>
 </phpunit>

@@ -74,7 +74,6 @@ abstract class AbstractColumn extends AbstractOptions
     /**
      * Gets the columns value from data.
      *
-     * @throws \RuntimeException when missing or invalid method
      * @throws \InvalidArgumentException when invalid data is passed
      * @param array|object $data
      * @return mixed
@@ -91,10 +90,7 @@ abstract class AbstractColumn extends AbstractOptions
                 if (isset($data[$method])) {
                     return $data[$method];
                 }
-                throw new \InvalidArgumentException(sprintf(
-                    'no key "%s" exists in data array',
-                    $method
-                ));
+                return '';
             } else if ($method instanceof Closure) {
                 return $method($data);
             }
@@ -120,18 +116,13 @@ abstract class AbstractColumn extends AbstractOptions
                         return $data->$accessor();
                     }
                 }
-                throw new \InvalidArgumentException(sprintf(
-                    'no property "%s" or accessor "%s" exists in data object',
-                    $method,
-                    $accessor
-                ));
+                return '';
             } else if ($method instanceof Closure) {
                 return $method($data);
             }
-        } else {
-            throw new \InvalidArgumentException('array or object expected');
         }
-        throw new \RuntimeException('invalid or missing method for data retrieval');
+
+        return '';
     }
 
     /**
