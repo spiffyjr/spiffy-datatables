@@ -1,13 +1,10 @@
 <?php
 
 namespace SpiffyDatatables;
+
 use Zend\Stdlib\Hydrator\HydratorAwareInterface;
 use Zend\Stdlib\Hydrator\HydratorInterface;
 
-/**
- * Class DataResult
- * @package SpiffyDatatables
- */
 class DataResult implements HydratorAwareInterface
 {
     /**
@@ -32,13 +29,13 @@ class DataResult implements HydratorAwareInterface
 
     /**
      * @param mixed $data
-     * @param int $totalResultCount
+     * @param int|null $totalResultCount
      * @param int|null $filteredResultCount
      */
-    public function __construct($data, $totalResultCount, $filteredResultCount = null)
+    public function __construct($data, $totalResultCount = null, $filteredResultCount = null)
     {
         $this->data                = $data;
-        $this->totalResultCount    = $totalResultCount;
+        $this->totalResultCount    = $totalResultCount ? $totalResultCount : count($data);
         $this->filteredResultCount = $filteredResultCount;
     }
 

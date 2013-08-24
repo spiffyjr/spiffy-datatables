@@ -1,34 +1,22 @@
 <?php
 
-namespace SpiffyDatatables\Service;
+namespace SpiffyDatatables\View\Helper;
 
-use SpiffyDatatables\Datatable;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class DatatableFactory implements FactoryInterface
 {
     /**
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * @param array $config
-     */
-    public function __construct(array $config)
-    {
-        $this->config = $config;
-    }
-
-    /**
      * Create service
      *
      * @param ServiceLocatorInterface $serviceLocator
-     * @return mixed
+     * @return Datatable
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        return Datatable::create($this->config);
+        /** @var \Zend\View\HelperPluginManager $serviceLocator */
+        $sl = $serviceLocator->getServiceLocator();
+        return new Datatable($sl->get('SpiffyDatatables\DatatableManager'));
     }
 }

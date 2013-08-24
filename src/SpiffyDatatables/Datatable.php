@@ -3,9 +3,6 @@
 namespace SpiffyDatatables;
 
 use SpiffyDatatables\Column\Collection;
-use SpiffyDatatables\Renderer\RendererInterface;
-use SpiffyDatatables\Renderer\Table;
-use Zend\Json\Json;
 
 class Datatable
 {
@@ -20,45 +17,20 @@ class Datatable
     protected $columns;
 
     /**
-     * @var Options
+     * @var array
      */
-    protected $options;
-
-    /**
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-    /**
-     * @param array $spec
-     * @return Datatable
-     */
-    public static function create(array $spec)
-    {
-        $datatable = new Datatable();
-
-        if (isset($spec['columns'])) {
-            $datatable->setColumns(Collection::factory($spec['columns']));
-        }
-
-        if (isset($spec['options'])) {
-            $datatable->getOptions()->setData($spec['options']);
-        }
-
-        return $datatable;
-    }
+    protected $options = array();
 
     /**
      * @return bool
      */
     public function isServerSide()
     {
-        return $this->getOptions()->get('bServerSide') ||
-            $this->getDataResult()->getFilteredResultCount() !== null;
+        return isset($this->options['bServerSide']) || $this->getDataResult()->getFilteredResultCount() !== null;
     }
 
     /**
-     * @param \SpiffyDatatables\DataResult $dataResult
+     * @param DataResult $dataResult
      * @return Datatable
      */
     public function setDataResult(DataResult $dataResult)
@@ -68,7 +40,7 @@ class Datatable
     }
 
     /**
-     * @return \SpiffyDatatables\DataResult
+     * @return DataResult
      */
     public function getDataResult()
     {
@@ -89,7 +61,7 @@ class Datatable
     }
 
     /**
-     * @return \SpiffyDatatables\Column\Collection
+     * @return Collection
      */
     public function getColumns()
     {
@@ -100,78 +72,40 @@ class Datatable
     }
 
     /**
-     * @param Options $options
-     * @return Datatable
+     * @param array $options
+     * @return $this
      */
-    public function setOptions(Options $options)
+    public function setOptions($options)
     {
         $this->options = $options;
         return $this;
     }
 
     /**
-     * @return Options
+     * @return array
      */
     public function getOptions()
     {
-        if (!$this->options instanceof Options) {
-            $this->options = new Options();
-        }
         return $this->options;
     }
 
     /**
-     * @param RendererInterface $renderer
-     * @return Datatable
+     * @param string $key
+     * @param string $value
+     * @return $this
      */
-    public function setRenderer(RendererInterface $renderer)
+    public function setOption($key, $value)
     {
-        $this->renderer = $renderer;
+        $this->options[$key] = $value;
         return $this;
     }
 
     /**
-     * @return \SpiffyDatatables\Renderer\RendererInterface
+     * @param string $key
+     * @return mixed
      */
-    public function getRenderer()
+    public function getOption($key)
     {
-        if (!$this->renderer instanceof RendererInterface) {
-            $this->renderer = new Table();
-        }
-        return $this->renderer;
-    }
-
-    /**
-     * Proxies to getRenderer()->renderJavascript();
-     *
-     * @var string $id
-     * @return string
-     */
-    public function renderJavascript($id)
-    {
-        return $this->getRenderer()->renderJavascript($id, $this);
-    }
-
-    /**
-     * Proxies to getRenderer()->renderOptionsJavascript();
-     *
-     * @var array|null $options
-     * @return string
-     */
-    public function renderOptionsJavascript(array $options = array())
-    {
-        return $this->getRenderer()->renderOptionsJavascript($this, $options);
-    }
-
-    /**
-     * Proxies to getRenderer()->renderHtml();
-     *
-     * @var string $id
-     * @var array $attributes
-     * @return string
-     */
-    public function renderHtml($id, array $attributes = array())
-    {
-        return $this->getRenderer()->renderHtml($id, $this, $attributes);
+        return isset($this->options[$key]) ? $this->options[$key] : null;
     }
 }

@@ -1,7 +1,11 @@
 <?php
 
 return array(
+    'aliases' => array(
+        'SpiffyDatatables\Manager' => 'SpiffyDatatables\DatatableManager',
+    ),
     'factories' => array(
-        'SpiffyDatatables\Manager' => 'SpiffyDatatables\Service\ManagerFactory'
+        'SpiffyDatatables\DatatableManager' => 'SpiffyDatatables\DatatableManagerFactory',
+        'SpiffyDatatables\ModuleOptions'    => 'SpiffyDatatables\ModuleOptionsFactory',
     )
 );

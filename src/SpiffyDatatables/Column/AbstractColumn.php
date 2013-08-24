@@ -2,9 +2,6 @@
 
 namespace SpiffyDatatables\Column;
 
-use Closure;
-use SpiffyDatatables\Options\AbstractOptions;
-
 /**
  * Class AbstractColumn
  *
@@ -14,132 +11,75 @@ use SpiffyDatatables\Options\AbstractOptions;
  *
  * @package SpiffyDatatables\Column
  */
-abstract class AbstractColumn extends AbstractOptions
+abstract class AbstractColumn
 {
     /**
-     * The method for retrieving data from a data object. Can be a property name,
-     * method, or a closure. The closure will receive the data object as the
-     * first argument.
-     *
-     * @var string
-     */
-    protected $method;
-
-    /**
      * @var array
      */
-    protected $data = array(
-        'aDataSort'       => null,
-        'asSorting'       => null,
-        'bSearchable'     => null,
-        'bSortable'       => null,
-        'bVisible'        => null,
-        'fnCreatedCell'   => null,
-        'iDataSort'       => null,
-        'mData'           => null,
-        'mDataProp'       => null,
-        'mRender'         => null,
-        'sCellType'       => null,
-        'sClass'          => null,
-        'sContentPadding' => null,
-        'sDefaultContent' => null,
-        'sName'           => null,
-        'sSortDataType'   => null,
-        'sTitle'          => null,
-        'sType'           => null,
-        'sWidth'          => null
-    );
-
-    /**
-     * An array of keys that are JSON expressions and should be taken literally (closures, for example).
-     *
-     * @var array
-     */
-    protected $jsonExpressions = array(
-        'mRender'
-    );
+    protected $options = array();
 
     /**
      * @param array $options
      */
     public function __construct(array $options = array())
     {
-        if (isset($options['method'])) {
-            $this->setMethod($options['method']);
-            unset($options['method']);
-        }
-        parent::__construct($options);
+        $this->setOptions($options);
     }
 
     /**
-     * Gets the columns value from data.
-     *
-     * @throws \InvalidArgumentException when invalid data is passed
-     * @param array|object $data
+     * @param array $row
      * @return mixed
      */
-    public function getValueFromData($data)
+    public function getValue(array $row)
     {
-        $method = $this->method;
-        $method = $method ? $method : $this->get('mDataProp');
-        $method = $method ? $method : $this->get('mData');
-        $method = $method ? $method : $this->get('sTitle');
+        $key = $this->getOption('mDataProp');
+        $key = $key ? $key : $this->getOption('mData');
+        $key = $key ? $key : $this->getOption('sTitle');
 
-        if (is_array($data)) {
-            if (is_string($method)) {
-                if (isset($data[$method])) {
-                    return $data[$method];
-                }
-                return '';
-            } else if ($method instanceof Closure) {
-                return $method($data);
-            }
-        } else if (is_object($data)) {
-            if (is_string($method)) {
-                $accessor = null;
-                $vars     = get_object_vars($data);
-
-                if (array_key_exists($method, $vars)) {
-                    return $vars[$method];
-                } else if (is_array($data) && isset($data[$method])) {
-                    return $data->$method;
-                } else if (method_exists($data, $method)) {
-                    return $data->$method();
-                } else {
-                    $transform = function($letters) {
-                        return strtoupper(array_shift($letters));
-                    };
-                    $accessor = preg_replace_callback('/(_.)/', $transform, $method);
-                    $accessor = 'get' . ucfirst($accessor);
-                    $methods  = get_class_methods($data);
-                    if (in_array($accessor, $methods)) {
-                        return $data->$accessor();
-                    }
-                }
-                return '';
-            } else if ($method instanceof Closure) {
-                return $method($data);
-            }
+        if (!$key) {
+            return null;
         }
 
-        return '';
+        return isset($row[$key]) ? $row[$key] : null;
     }
 
     /**
-     * @param string $method
-     * @return AbstractColumn
+     * @param array $options
+     * @return $this
      */
-    public function setMethod($method)
+    public function setOptions($options)
     {
-        $this->method = $method;
+        foreach ($options as $key => $value) {
+            $this->setOption($key, $value);
+        }
         return $this;
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getMethod()
+    public function getOptions()
     {
-        return $this->method;
+        return $this->options;
+    }
+
+    /**
+     * @param string $key
+     * @param string $value
+     * @return $this
+     */
+    public function setOption($key, $value)
+    {
+        $this->options[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public function getOption($key)
+    {
+        return isset($this->options[$key]) ? $this->options[$key] : null;
     }
 }
