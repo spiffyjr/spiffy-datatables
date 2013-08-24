@@ -7,5 +7,8 @@ return array(
     'factories' => array(
         'SpiffyDatatables\DatatableManager' => 'SpiffyDatatables\DatatableManagerFactory',
         'SpiffyDatatables\ModuleOptions'    => 'SpiffyDatatables\ModuleOptionsFactory',
+    ),
+    'invokables' => array(
+        'SpiffyDatatables\Config\RuntimeHandler' => 'SpiffyDatatables\Config\RuntimeHandler',
     )
 );
