@@ -3,13 +3,21 @@
 namespace SpiffyDatatables;
 
 use SpiffyDatatables\Column\Collection;
+use Zend\Stdlib\Hydrator\ClassMethods;
+use Zend\Stdlib\Hydrator\HydratorAwareInterface;
+use Zend\Stdlib\Hydrator\HydratorInterface;
 
-class Datatable
+class Datatable implements HydratorAwareInterface
 {
     /**
      * @var DataResult
      */
     protected $dataResult;
+
+    /**
+     * @var HydratorInterface
+     */
+    protected $hydrator;
 
     /**
      * @var Collection
@@ -26,28 +34,45 @@ class Datatable
      */
     public function isServerSide()
     {
-        return isset($this->options['bServerSide']) || $this->getDataResult()->getFilteredResultCount() !== null;
+        return isset($this->options['bServerSide']);
     }
 
     /**
-     * @param DataResult $dataResult
+     * @return array
+     */
+    public function getData()
+    {
+        if (!$this->dataResult) {
+            return array();
+        }
+
+        $hydrator = $this->getHydrator();
+        $result   = array();
+        foreach ($this->dataResult->getData() as $data) {
+            if (is_object($data)) {
+                $data = $hydrator->extract($data);
+            }
+            $result[] = $data;
+        }
+        return $result;
+    }
+
+    /**
+     * @param array|DataResult $dataResult
+     * @throws \InvalidArgumentException
      * @return Datatable
      */
-    public function setDataResult(DataResult $dataResult)
+    public function setDataResult($dataResult)
     {
+        if (is_array($dataResult)) {
+            $dataResult = new DataResult($dataResult);
+        }
+
+        if (!$dataResult instanceof DataResult) {
+            throw new \InvalidArgumentException('DataResult must be an array or instanceof DataResult');
+        }
         $this->dataResult = $dataResult;
         return $this;
-    }
-
-    /**
-     * @return DataResult
-     */
-    public function getDataResult()
-    {
-        if (!$this->dataResult instanceof DataResult) {
-            $this->dataResult = new DataResult(array(), 0);
-        }
-        return $this->dataResult;
     }
 
     /**
@@ -107,5 +132,25 @@ class Datatable
     public function getOption($key)
     {
         return isset($this->options[$key]) ? $this->options[$key] : null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setHydrator(HydratorInterface $hydrator)
+    {
+        $this->hydrator = $hydrator;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getHydrator()
+    {
+        if (!$this->hydrator instanceof HydratorInterface) {
+            $this->hydrator = new ClassMethods();
+        }
+        return $this->hydrator;
     }
 }

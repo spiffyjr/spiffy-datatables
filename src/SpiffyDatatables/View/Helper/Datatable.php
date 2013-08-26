@@ -11,11 +11,6 @@ use Zend\View\Helper\AbstractHtmlElement;
 class Datatable extends AbstractHtmlElement
 {
     /**
-     * @var string
-     */
-    protected $id;
-
-    /**
      * @var DatatableManager
      */
     protected $manager;
@@ -35,16 +30,15 @@ class Datatable extends AbstractHtmlElement
 
     /**
      * @param string|Table|null $nameOrDatatable
-     * @param string $id
-     * @param array $attributes
      * @return $this
      */
-    public function __invoke($nameOrDatatable = null, $id = null, $attributes = array())
+    public function __invoke($nameOrDatatable = null)
     {
         if ($nameOrDatatable) {
-            $this->setId($id);
-            $this->injectJs($nameOrDatatable);
-            return $this->renderHtml($nameOrDatatable, $attributes);
+            if (is_string($nameOrDatatable)) {
+                return $this->manager->get($nameOrDatatable);
+            }
+            return $nameOrDatatable;
         }
         return $this;
     }
@@ -53,11 +47,12 @@ class Datatable extends AbstractHtmlElement
      * Injects the Datatable javascript using the inlineScript helper.
      *
      * @param string|null $nameOrDatatable
+     * @param string|null $id
      * @param string $placement prepend, append, or set
      */
-    public function injectJs($nameOrDatatable, $placement = 'APPEND')
+    public function injectJs($nameOrDatatable, $id = null, $placement = 'APPEND')
     {
-        $js = sprintf('$(function() { %s });', $this->renderJavascript($nameOrDatatable));
+        $js = sprintf('$(function() { %s });', $this->renderJavascript($nameOrDatatable, $id));
         $this->getView()->inlineScript('script', $js, $placement);
     }
 
@@ -65,17 +60,22 @@ class Datatable extends AbstractHtmlElement
      * Renders the HTML for the Datatable.
      *
      * @param string|Table $nameOrDatatable
+     * @param string|null $id
      * @param array $attributes
      * @return string
      */
-    public function renderHtml($nameOrDatatable, array $attributes = array())
+    public function renderHtml($nameOrDatatable, $id = null, array $attributes = array())
     {
-        if (!$nameOrDatatable instanceof Table) {
-            $nameOrDatatable = $this->manager->get($nameOrDatatable);
+        if ($id) {
+            $attributes['id'] = $id;
         }
 
         if (!isset($attributes['id'])) {
             $attributes['id'] = $this->extractId($nameOrDatatable);
+        }
+
+        if (!$nameOrDatatable instanceof Table) {
+            $nameOrDatatable = $this->manager->get($nameOrDatatable);
         }
 
         $columns    = $nameOrDatatable->getColumns();
@@ -115,13 +115,17 @@ class Datatable extends AbstractHtmlElement
      * Renders the Javascript for the Datatable.
      *
      * @param string|Table $nameOrDatatable
+     * @param string|null $id
      * @return string
      */
-    public function renderJavascript($nameOrDatatable)
+    public function renderJavascript($nameOrDatatable, $id = null)
     {
+        if (!$id) {
+            $id = $this->extractId($nameOrDatatable);
+        }
         return sprintf(
             '$("#%s").dataTable(%s);',
-            $this->extractId($nameOrDatatable),
+            $id,
             $this->renderOptionsJavascript($nameOrDatatable)
         );
     }
@@ -160,16 +164,6 @@ class Datatable extends AbstractHtmlElement
     }
 
     /**
-     * @param string $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    /**
      * @param Table $datatable
      * @return string
      */
@@ -191,10 +185,6 @@ class Datatable extends AbstractHtmlElement
      */
     protected function extractId($nameOrDatatable)
     {
-        if ($this->id) {
-            return $this->id;
-        }
-
         if (is_string($nameOrDatatable)) {
             return $this->normalizeId($nameOrDatatable);
         }
@@ -211,13 +201,19 @@ class Datatable extends AbstractHtmlElement
     {
         $output = '';
 
-        foreach($datatable->getDataResult()->getData() as $row) {
+        foreach($datatable->getData() as $row) {
             $output.= str_repeat(' ', 8) . '<tr>' . PHP_EOL;
 
             /** @var $column \SpiffyDatatables\Column\AbstractColumn */
             foreach($datatable->getColumns() as $column) {
                 $style  = ($column->getOption('bVisible') === false) ? ' style="display:none;"' : '';
                 $value  = $column->getValue($row);
+
+                if (is_object($value)) {
+                    $value = '[object]';
+                } else if (is_array($value)) {
+                    $value = '[array]';
+                }
 
                 $output.= sprintf("%s<td%s>%s</td>%s", str_repeat(' ', 12), $style, $value, PHP_EOL);
             }

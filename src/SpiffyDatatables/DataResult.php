@@ -5,7 +5,7 @@ namespace SpiffyDatatables;
 use Zend\Stdlib\Hydrator\HydratorAwareInterface;
 use Zend\Stdlib\Hydrator\HydratorInterface;
 
-class DataResult implements HydratorAwareInterface
+class DataResult
 {
     /**
      * @var array
@@ -16,11 +16,6 @@ class DataResult implements HydratorAwareInterface
      * @var int
      */
     protected $filteredResultCount;
-
-    /**
-     * @var null|HydratorInterface
-     */
-    protected $hydrator;
 
     /**
      * @var int
@@ -44,16 +39,6 @@ class DataResult implements HydratorAwareInterface
      */
     public function getData()
     {
-        if ($this->hydrator instanceof HydratorInterface) {
-            $result = array();
-            foreach ($this->data as $data) {
-                if (is_object($data)) {
-                    $data = $this->hydrator->extract($data);
-                }
-                $result[] = $data;
-            }
-            return $result;
-        }
         return $this->data;
     }
 
@@ -71,22 +56,5 @@ class DataResult implements HydratorAwareInterface
     public function getFilteredResultCount()
     {
         return $this->filteredResultCount;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setHydrator(HydratorInterface $hydrator)
-    {
-        $this->hydrator = $hydrator;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getHydrator()
-    {
-        return $this->hydrator;
     }
 }
