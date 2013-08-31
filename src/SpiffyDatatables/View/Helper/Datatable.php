@@ -2,7 +2,7 @@
 
 namespace SpiffyDatatables\View\Helper;
 
-use SpiffyDatatables\Datatable as Table;
+use SpiffyDatatables\AbstractDatatable;
 use SpiffyDatatables\DatatableManager;
 use Zend\Json\Expr;
 use Zend\Json\Json;
@@ -29,7 +29,7 @@ class Datatable extends AbstractHtmlElement
     }
 
     /**
-     * @param string|Table|null $nameOrDatatable
+     * @param string|AbstractDatatable|null $nameOrDatatable
      * @return $this
      */
     public function __invoke($nameOrDatatable = null)
@@ -59,7 +59,7 @@ class Datatable extends AbstractHtmlElement
     /**
      * Renders the HTML for the Datatable.
      *
-     * @param string|Table $nameOrDatatable
+     * @param string|AbstractDatatable $nameOrDatatable
      * @param string|null $id
      * @param array $attributes
      * @return string
@@ -74,7 +74,7 @@ class Datatable extends AbstractHtmlElement
             $attributes['id'] = $this->extractId($nameOrDatatable);
         }
 
-        if (!$nameOrDatatable instanceof Table) {
+        if (!$nameOrDatatable instanceof AbstractDatatable) {
             $nameOrDatatable = $this->manager->get($nameOrDatatable);
         }
 
@@ -114,7 +114,7 @@ class Datatable extends AbstractHtmlElement
     /**
      * Renders the Javascript for the Datatable.
      *
-     * @param string|Table $nameOrDatatable
+     * @param string|AbstractDatatable $nameOrDatatable
      * @param string|null $id
      * @return string
      */
@@ -135,13 +135,13 @@ class Datatable extends AbstractHtmlElement
      * javascript instead of using the built in methods. If no custom options are passed in then the
      * options for the datatable are used.
      *
-     * @param string|Table $nameOrDatatable
+     * @param string|AbstractDatatable $nameOrDatatable
      * @param array|null $options
      * @return string
      */
     public function renderOptionsJavascript($nameOrDatatable, array $options = null)
     {
-        if (!$nameOrDatatable instanceof Table) {
+        if (!$nameOrDatatable instanceof AbstractDatatable) {
             $nameOrDatatable = $this->manager->get($nameOrDatatable);
         }
 
@@ -164,10 +164,10 @@ class Datatable extends AbstractHtmlElement
     }
 
     /**
-     * @param Table $datatable
+     * @param AbstractDatatable $datatable
      * @return string
      */
-    protected function getServerSideBody(Table $datatable)
+    protected function getServerSideBody(AbstractDatatable $datatable)
     {
         $output = str_repeat(' ', 8) . '<tr>';
         $output.= sprintf(
@@ -180,24 +180,24 @@ class Datatable extends AbstractHtmlElement
     }
 
     /**
-     * @param string|Table $nameOrDatatable
+     * @param string|AbstractDatatable $nameOrDatatable
      * @return string
      */
     protected function extractId($nameOrDatatable)
     {
         if (is_string($nameOrDatatable)) {
-            return $this->normalizeId($nameOrDatatable);
+            return preg_replace('/[^a-z_-]+/', '', strtolower($nameOrDatatable));
         }
 
         return 'datatable';
     }
 
     /**
-     * @param Table $datatable
+     * @param AbstractDatatable $datatable
      * @throws \RuntimeException
      * @return string
      */
-    protected function getStaticBody(Table $datatable)
+    protected function getStaticBody(AbstractDatatable $datatable)
     {
         $output = '';
 
