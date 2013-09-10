@@ -30,6 +30,15 @@ abstract class AbstractDatatable implements HydratorAwareInterface
     protected $options = array();
 
     /**
+     * Used to setup the datatable. This is automatically called if the
+     * datatable is retrieved from the datatable manager.
+     *
+     * @return void
+     */
+    public function init()
+    {}
+
+    /**
      * @return bool
      */
     public function isServerSide()
