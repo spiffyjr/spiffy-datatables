@@ -67,6 +67,14 @@ abstract class AbstractDatatable implements HydratorAwareInterface
     }
 
     /**
+     * @return DataResult
+     */
+    public function getDataResult()
+    {
+        return $this->dataResult;
+    }
+
+    /**
      * @param array|DataResult $dataResult
      * @throws \InvalidArgumentException
      * @return Datatable
