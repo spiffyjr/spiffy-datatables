@@ -4,13 +4,13 @@
     "homepage": "http://www.github.com/spiffyjr/spiffy-datatables.git",
     "require": {
         "php": ">=5.3.3",
-        "zendframework/zend-json": "2.*",
-        "zendframework/zend-view": "2.*"
+        "zendframework/zend-json": "~2.2",
+        "zendframework/zend-view": "~2.2"
     },
     "require-dev": {
-        "mockery/mockery": "0.*",
-        "phpunit/phpunit": "3.*",
-        "spiffy/spiffy-test": "dev-master"
+        "mockery/mockery": "~0.8",
+        "phpunit/phpunit": "~3.7",
+        "spiffy/spiffy-test": "~0.1"
     },
     "autoload": {
         "psr-0": {
@@ -20,7 +20,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.x-dev"
+            "dev-develop": "1.x-dev"
         }
     }
 }
